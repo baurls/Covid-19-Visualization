@@ -4,4 +4,5 @@ class GUI:
     
     def showUI(self):
         #show GUI
+        print("test message for debugging")
         pass

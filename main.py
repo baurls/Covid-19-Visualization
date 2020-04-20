@@ -24,3 +24,4 @@ data = DataLayer(data_path)
 #show user interface, that has a conection to the data layer
 gui = GUI(data)
 gui.showUI()
+

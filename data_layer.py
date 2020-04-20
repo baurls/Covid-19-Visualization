@@ -12,10 +12,11 @@ class DataLayer:
         #strore it in a more specific data format
         #anser querys from VierController
         self.__process_input_data(datafile)
+        print("test message for debugging")
         
     
     #--- private util mehods -----------------------------------------------------
-    def __process_input_data(datafile):
+    def __process_input_data(self, datafile):
         pass
     
     

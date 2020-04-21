@@ -1,12 +1,17 @@
+from logger import IOLogger 
+logger = IOLogger(10) 
+
+#constants
 class constants:
     DATA_PATH = 'Data/' 
+
     
-class functions:
-    def globalUtilTestFunc():
-        #do something on a global scale
-        return 1+1
-    
+#functions
+def getLogger():
+    return logger    
   
+
+#public classes
 class TimerInterval:
     def __init__(self, start, end):
         self.start = start

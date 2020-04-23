@@ -1,0 +1,85 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+    
+      <meta charset="utf-8">
+      <title>Bokeh Plot</title>
+      
+      
+        
+          
+        
+        
+          
+        <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.0.2.min.js" integrity="sha384-ufR9RFnRs6lniiaFvtJziE0YeidtAgBRH6ux2oUItHw5WTvE1zuk9uzhUU/FJXDp" crossorigin="anonymous"></script>
+        <script type="text/javascript">
+            Bokeh.set_log_level("info");
+        </script>
+        
+      
+      
+    
+  </head>
+  
+  
+  <body>
+    
+      
+        
+          
+          
+            
+              <div class="bk-root" id="1c0890b7-7a22-4fbd-86eb-8ea8a324aef1" data-root-id="1003"></div>
+            
+          
+        
+      
+      
+        <script type="application/json" id="1137">
+          {"a70cc482-8fa8-407c-a000-823ce2cc1447":{"roots":{"references":[{"attributes":{"active_drag":"auto","active_inspect":"auto","active_multi":null,"active_scroll":"auto","active_tap":"auto","tools":[{"id":"1022"},{"id":"1023"},{"id":"1024"},{"id":"1025"},{"id":"1026"},{"id":"1027"}]},"id":"1029","type":"Toolbar"},{"attributes":{"axis":{"id":"1018"},"dimension":1,"grid_line_color":null,"ticker":null},"id":"1021","type":"Grid"},{"attributes":{"data_source":{"id":"1001"},"glyph":{"id":"1037"},"hover_glyph":null,"muted_glyph":null,"nonselection_glyph":{"id":"1038"},"selection_glyph":null,"view":{"id":"1040"}},"id":"1039","type":"GlyphRenderer"},{"attributes":{},"id":"1027","type":"HelpTool"},{"attributes":{},"id":"1019","type":"BasicTicker"},{"attributes":{"overlay":{"id":"1028"}},"id":"1024","type":"BoxZoomTool"},{"attributes":{"high":40,"low":0,"palette":["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#0c2c84"]},"id":"1002","type":"LinearColorMapper"},{"attributes":{"text":"Coronavirus Total Cases on 4/20/2020"},"id":"1004","type":"Title"},{"attributes":{"below":[{"id":"1014"}],"center":[{"id":"1017"},{"id":"1021"}],"left":[{"id":"1018"}],"plot_width":950,"renderers":[{"id":"1039"}],"title":{"id":"1004"},"toolbar":{"id":"1029"},"toolbar_location":null,"x_range":{"id":"1006"},"x_scale":{"id":"1010"},"y_range":{"id":"1008"},"y_scale":{"id":"1012"}},"id":"1003","subtype":"Figure","type":"Plot"},{"attributes":{"source":{"id":"1001"}},"id":"1040","type":"CDSView"},{"attributes":{},"id":"1010","type":"LinearScale"},{"attributes":{},"id":"1023","type":"WheelZoomTool"},{"attributes":{},"id":"1006","type":"DataRange1d"},{"attributes":{},"id":"1046","type":"UnionRenderers"},{"attributes":{},"id":"1025","type":"SaveTool"},{"attributes":{"bottom_units":"screen","fill_alpha":0.5,"fill_color":"lightgrey","left_units":"screen","level":"overlay","line_alpha":1.0,"line_color":"black","line_dash":[4,4],"line_width":2,"render_mode":"css","right_units":"screen","top_units":"screen"},"id":"1028","type":"BoxAnnotation"},{"attributes":{},"id":"1026","type":"ResetTool"},{"attributes":{},"id":"1047","type":"Selection"},{"attributes":{},"id":"1015","type":"BasicTicker"},{"attributes":{"formatter":{"id":"1045"},"ticker":{"id":"1015"}},"id":"1014","type":"LinearAxis"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"field":"Number of Cases","transform":{"id":"1002"}},"line_alpha":{"value":0.1},"line_width":{"value":0.25},"xs":{"field":"xs"},"ys":{"field":"ys"}},"id":"1038","type":"Patches"},{"attributes":{},"id":"1012","type":"LinearScale"},{"attributes":{},"id":"1022","type":"PanTool"},{"attributes":{},"id":"1008","type":"DataRange1d"},{"attributes":{"geojson":"{\"type\": \"FeatureCollection\", \"features\": []}","selected":{"id":"1047"},"selection_policy":{"id":"1046"}},"id":"1001","type":"GeoJSONDataSource"},{"attributes":{},"id":"1045","type":"BasicTickFormatter"},{"attributes":{"axis":{"id":"1014"},"grid_line_color":null,"ticker":null},"id":"1017","type":"Grid"},{"attributes":{"fill_color":{"field":"Number of Cases","transform":{"id":"1002"}},"line_width":{"value":0.25},"xs":{"field":"xs"},"ys":{"field":"ys"}},"id":"1037","type":"Patches"},{"attributes":{"formatter":{"id":"1043"},"ticker":{"id":"1019"}},"id":"1018","type":"LinearAxis"},{"attributes":{},"id":"1043","type":"BasicTickFormatter"}],"root_ids":["1003"]},"title":"Bokeh Application","version":"2.0.2"}}
+        </script>
+        <script type="text/javascript">
+          (function() {
+            var fn = function() {
+              Bokeh.safely(function() {
+                (function(root) {
+                  function embed_document(root) {
+                    
+                  var docs_json = document.getElementById('1137').textContent;
+                  var render_items = [{"docid":"a70cc482-8fa8-407c-a000-823ce2cc1447","root_ids":["1003"],"roots":{"1003":"1c0890b7-7a22-4fbd-86eb-8ea8a324aef1"}}];
+                  root.Bokeh.embed.embed_items(docs_json, render_items);
+                
+                  }
+                  if (root.Bokeh !== undefined) {
+                    embed_document(root);
+                  } else {
+                    var attempts = 0;
+                    var timer = setInterval(function(root) {
+                      if (root.Bokeh !== undefined) {
+                        clearInterval(timer);
+                        embed_document(root);
+                      } else {
+                        attempts++;
+                        if (attempts > 100) {
+                          clearInterval(timer);
+                          console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+                        }
+                      }
+                    }, 10, root)
+                  }
+                })(window);
+              });
+            };
+            if (document.readyState != "loading") fn();
+            else document.addEventListener("DOMContentLoaded", fn);
+          })();
+        </script>
+    
+  </body>
+  
+</html>

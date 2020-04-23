@@ -6,11 +6,20 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import geopandas as gpd
-import pandas as pandas
+import pandas as pd
+import json
+import plotly as py
+import plotly.express as px
+import plotly.graph_objs as go
+from plotly.subplots import make_subplots
+from plotly.offline import download_plotlyjs, plot
 
 class GUI:
     def __init__(self, data_object):
         self.dataController = data_object
+        self.dataFrame = pd.read_csv('Data/2020-04-21/covid_19_data.csv')
+        self.displayMap()
+    
     
     def showUI(self):
         #show GUI
@@ -18,9 +27,28 @@ class GUI:
         pass
 
 
-    def displayMap(data):
-        gdf = GeoDataFrame(df, crs=crs, geometry=geometry)
-        #TODO: display data on a map GUI and add slider 
+    def displayMap(self):
+        self.dataFrame= self.dataFrame.rename(columns={'Country/Region':'Country'})
+        self.dataFrame = self.dataFrame.rename(columns={'ObservationDate':'Date'})
+        final_df = self.dataFrame[self.dataFrame['Confirmed']>0]
+        final_df = final_df.groupby(['Date','Country']).sum().reset_index()
+
+        fig = px.choropleth(final_df, 
+                    locations="Country", 
+                    locationmode = "country names",
+                    color="Confirmed", 
+                    hover_name="Country", 
+                    animation_frame="Date"
+                   )
+        fig.update_layout(
+            title_text = 'Global Spread of Coronavirus as of April 20, 2020 {Author: Shardool}',
+            title_x = 0.5,
+            geo=dict(
+                showframe = False,
+                showcoastlines = False,
+            ))
+        
+        fig.show()
 
 
 

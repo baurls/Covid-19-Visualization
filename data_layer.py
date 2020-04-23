@@ -101,8 +101,8 @@ class DataLayer:
 #        print(dframe[datafilter1 & datafilter2].head(5))
         
         logger.log('Preprocessing geomap')
-        self.goo_map_dataframe = self.dataframe.rename(columns={'Country/Region':'Country'}) #copy & rename  
-        self.goo_map_dataframe.rename(columns={'ObservationDate':'Date'}, inplace=True) #only rename
+        self.geo_map_dataframe = self.dataframe.rename(columns={'Country/Region':'Country'}) #copy & rename  
+        self.geo_map_dataframe.rename(columns={'ObservationDate':'Date'}, inplace=True) #only rename
         
         
         logger.log('Preprocessing finished')
@@ -110,7 +110,7 @@ class DataLayer:
         
     #--- public mehods -----------------------------------------------------------
     def get_map_dataframe(self):
-        final_df = self.goo_map_dataframe[self.goo_map_dataframe['Confirmed']>0]
+        final_df = self.geo_map_dataframe[self.geo_map_dataframe['Confirmed']>0]
         return final_df.groupby(['Date','Country']).sum().reset_index()
         
     def get_as_of_date(self):

@@ -66,5 +66,15 @@ class GUI:
     def showLogTransform(self,x_vals,y_vals,x_label,y_label,title):
         '''Will plot a log transformation to present exponential 
            trends for a give timeframe and given location'''
-        return
+        x = self.x_vals
+        y = self.y_vals
+        x_label = self.x_label
+        y_label = self.y_label
+        t = self.title
+        plt.xlabel(x_label)
+        plt.ylabel(y_label)
+        plt.title(t)
+        plt.plot(x,y)  
+        plt.show()
+        return 
 

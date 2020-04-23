@@ -6,16 +6,7 @@ import global_code
 
 #global packages
 import matplotlib.pyplot as plt
-import numpy as np
-import geopandas as gpd
-import pandas as pd
-import json
-import plotly as py
 import plotly.express as px
-import plotly.express as px
-import plotly.graph_objs as go
-from plotly.subplots import make_subplots
-from plotly.offline import download_plotlyjs, plot
 
 
 logger = global_code.getLogger()

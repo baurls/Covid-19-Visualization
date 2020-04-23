@@ -22,8 +22,7 @@ logger = global_code.getLogger()
 
 class GUI:
     def __init__(self, data_object):
-        self.dataController = data_object
-        self.dataFrame = pd.read_csv('Data/2020-04-21/covid_19_data.csv')
+        self.data_controller = data_object
     
     
     def showUI(self):
@@ -34,18 +33,7 @@ class GUI:
 
 
     def displayMap(self):
-        ## ---- Start Comment:
-        ## I'd like to have this code inside the data layer, since it's 
-        ## technically not part of the UI functionality
-        
-        self.dataFrame= self.dataFrame.rename(columns={'Country/Region':'Country'})
-        self.dataFrame = self.dataFrame.rename(columns={'ObservationDate':'Date'})
-        final_df = self.dataFrame[self.dataFrame['Confirmed']>0]
-        final_df = final_df.groupby(['Date','Country']).sum().reset_index()
-
-        ## ---- End Comment
-
-        fig = px.choropleth(final_df, 
+        fig = px.choropleth(self.data_controller.get_map_dataframe(), 
                     locations="Country", 
                     locationmode = "country names",
                     color="Confirmed", 
@@ -53,8 +41,9 @@ class GUI:
                     animation_frame="Date",
                     color_continuous_scale= px.colors.sequential.Reds
                    )
+        as_of_date = self.data_controller.get_as_of_date()
         fig.update_layout(
-            title_text = 'Global Spread of Coronavirus as of April 20, 2020 {Author: Shardool}',
+            title_text = 'Global Spread of Coronavirus as of {}'.format(as_of_date),
             title_x = 0.5,
             geo=dict(
                 showframe = False,

@@ -100,10 +100,23 @@ class DataLayer:
 #        datafilter2 = dframe[Columns.PROVINCE] == 'Hubei'
 #        print(dframe[datafilter1 & datafilter2].head(5))
         
+        logger.log('Preprocessing geomap')
+        self.goo_map_dataframe = self.dataframe.rename(columns={'Country/Region':'Country'}) #copy & rename  
+        self.goo_map_dataframe.rename(columns={'ObservationDate':'Date'}, inplace=True) #only rename
+        
+        
         logger.log('Preprocessing finished')
         
         
     #--- public mehods -----------------------------------------------------------
+    def get_map_dataframe(self):
+        final_df = self.goo_map_dataframe[self.goo_map_dataframe['Confirmed']>0]
+        return final_df.groupby(['Date','Country']).sum().reset_index()
+        
+    def get_as_of_date(self):
+        no_days = len(self.total_days_recorded)
+        return self.total_days_recorded[no_days - 1]
+    
     def get_all_countries(self):
         return self.all_countries
     

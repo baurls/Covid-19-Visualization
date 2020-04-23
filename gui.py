@@ -10,6 +10,7 @@ import pandas as pd
 import json
 import plotly as py
 import plotly.express as px
+import plotly.express as px
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 from plotly.offline import download_plotlyjs, plot
@@ -38,7 +39,8 @@ class GUI:
                     locationmode = "country names",
                     color="Confirmed", 
                     hover_name="Country", 
-                    animation_frame="Date"
+                    animation_frame="Date",
+                    color_continuous_scale= px.colors.sequential.Reds
                    )
         fig.update_layout(
             title_text = 'Global Spread of Coronavirus as of April 20, 2020 {Author: Shardool}',

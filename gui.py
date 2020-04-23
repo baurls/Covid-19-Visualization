@@ -74,6 +74,7 @@ class GUI:
         plt.xlabel(x_label)
         plt.ylabel(y_label)
         plt.title(t)
+        plt.yscale('log')
         plt.plot(x,y)  
         plt.show()
         return 

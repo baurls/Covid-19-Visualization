@@ -79,7 +79,7 @@ class DataLayer:
         #get all dates available    
         self.total_days_recorded = dframe[Columns.OBSERVATION_DATE].unique()
                 
-        #for each day, record how many peple died, recoverd or infected
+        #for each day, record how many people died, recovered or infected
         
         self.accum_deaths_for_day = {}
         self.accum_recovery_for_day = {}
@@ -120,30 +120,4 @@ class DataLayer:
     def get_all_countries(self):
         return self.all_countries
     
-        # accumulated data
-    
-    def total_death_trend_data_for(incl_timeinterval): #see global code for interval
-        start = incl_timeinterval.start
-        end = incl_timeinterval.end
-        #todo
-        return None
-    
-    def total_recovered_trend_data_for(incl_timeinterval): #see global code for interval
-        start = incl_timeinterval.start
-        end = incl_timeinterval.end
-        #todo
-        return None
-    
-    def total_infected_trend_data_for(incl_timeinterval): #see global code for interval
-        start = incl_timeinterval.start
-        end = incl_timeinterval.end
-        #todo
-        return None
-    
-    
-        # location data
-    
-    def infected_in_country_for(country, incl_timeinterval):
-        #returns the number of infections in a country within the given time interval 
-        #todo
-        return None
+    #Extend methods here as needed

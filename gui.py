@@ -24,11 +24,13 @@ class GUI:
 
 
     def displayMap(self):
+        print(self.data_controller.get_map_dataframe())
         fig = px.choropleth(self.data_controller.get_map_dataframe(), 
                     locations="Country", 
                     locationmode = "country names",
                     color="Confirmed", 
                     hover_name="Country", 
+                    hover_data=["Deaths", "Recovered"],
                     animation_frame="Date",
                     color_continuous_scale= px.colors.sequential.Reds
                    )

@@ -1,8 +1,10 @@
 """
 @author: Shardool
 """
+#local imports 
+import global_code
 
-import matplotlib
+#global packages
 import matplotlib.pyplot as plt
 import numpy as np
 import geopandas as gpd
@@ -15,24 +17,33 @@ import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 from plotly.offline import download_plotlyjs, plot
 
+
+logger = global_code.getLogger()
+
 class GUI:
     def __init__(self, data_object):
         self.dataController = data_object
         self.dataFrame = pd.read_csv('Data/2020-04-21/covid_19_data.csv')
-        self.displayMap()
     
     
     def showUI(self):
         #show GUI
-        print("test message for debugging")
-        pass
+        self.displayMap()
+        logger.log('Map loading finished')
+        
 
 
     def displayMap(self):
+        ## ---- Start Comment:
+        ## I'd like to have this code inside the data layer, since it's 
+        ## technically not part of the UI functionality
+        
         self.dataFrame= self.dataFrame.rename(columns={'Country/Region':'Country'})
         self.dataFrame = self.dataFrame.rename(columns={'ObservationDate':'Date'})
         final_df = self.dataFrame[self.dataFrame['Confirmed']>0]
         final_df = final_df.groupby(['Date','Country']).sum().reset_index()
+
+        ## ---- End Comment
 
         fig = px.choropleth(final_df, 
                     locations="Country", 

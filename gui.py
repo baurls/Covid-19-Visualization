@@ -57,17 +57,29 @@ class GUI:
         lower_list = []
         lower_list.append(html.Div(navigation_list, style={'columnCount': 1}))
         lower_list.append(html.Div(plots_list, style={'columnCount': 1}))
-        lower_div = html.Div(lower_list, style={'columnCount': 2})
+        lower_list.append(html.Div(id='dd-output-container'))
+        lower_div = html.Div(lower_list,style={'columnCount': 2})
         
+
         main_div.append(UIComponents.get_map(data_pointer))
-        main_div.append(lower_div)
+        main_div.append(lower_div)        
         
         app.layout = html.Div(main_div)
         
+        @app.callback(
+            Output(component_id='dd-output-container', component_property='children'),
+            [Input(component_id='country_dropdown', component_property='value')]
+        )
+
+        def update_output(value):
+            print(value)
+
         port = global_code.constants.APP_PORT
         app.run_server(port=port, debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
         
         logger.log('GUI Server offlie')
+        
+
         
         
 

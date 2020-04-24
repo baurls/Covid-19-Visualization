@@ -4,6 +4,8 @@ logger = IOLogger(10)
 #constants
 class constants:
     DATA_PATH = 'Data/' 
+    APP_NAME = 'Covid-19 Spread Visualization'
+    APP_PORT = 1234
 
     
 #functions

@@ -11,6 +11,11 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 
 
+#plotly
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+
 logger = global_code.getLogger()
 
 class GUI:
@@ -20,33 +25,50 @@ class GUI:
     
     def showUI(self):
         #show GUI
-        self.displayMap()
-        logger.log('Map loading finished')
+        name = global_code.constants.APP_NAME
+        external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+        app = dash.Dash(name, external_stylesheets=external_stylesheets)
+        data_pointer = self.data_controller
         
-
-
-    def displayMap(self):
-        print(self.data_controller.get_map_dataframe())
-        fig = px.choropleth(self.data_controller.get_map_dataframe(), 
-                    locations="Country", 
-                    locationmode = "country names",
-                    color="Confirmed", 
-                    hover_name="Country", 
-                    hover_data=["Deaths", "Recovered"],
-                    animation_frame="Date",
-                    color_continuous_scale= px.colors.sequential.Reds
-                   )
-        as_of_date = self.data_controller.get_as_of_date()
-        fig.update_layout(
-            title_text = 'Global Spread of Coronavirus as of {}'.format(as_of_date),
-            title_x = 0.5,
-            geo=dict(
-                showframe = False,
-                showcoastlines = False,
-            ))
+        #add elemts to the layout
+        main_div = []
+        navigation_list = []
+        plots_list = []
         
-        fig.show()
-
+        navigation_list.append(html.H2('Country Selection'))
+        navigation_list.append(UIComponents.get_country_dropdown(data_pointer))
+        navigation_list.append(html.Label(' '))
+        
+        navigation_list.append(html.H2('Timeframe Selection'))
+        navigation_list.append(html.Label(' Start'))
+        navigation_list.append(UIComponents.get_timeframe_selection(data_pointer, 'start'))
+        navigation_list.append(html.Label(' End'))
+        navigation_list.append(UIComponents.get_timeframe_selection(data_pointer, 'end'))
+        
+        plots_list.append(html.H2('Plots'))
+        plots_list.append(html.H3('Confirmed for selected Interval/Country'))
+        plots_list.append(html.Label('<insert_plot_here>'))
+        plots_list.append(html.H3('Deaths for selected Interval/Country'))
+        plots_list.append(html.Label('<insert_plot_here>'))
+        plots_list.append(html.H3('Recovered for selected Interval/Country'))
+        plots_list.append(html.Label('<insert_plot_here>'))
+        
+        lower_list = []
+        lower_list.append(html.Div(navigation_list, style={'columnCount': 1}))
+        lower_list.append(html.Div(plots_list, style={'columnCount': 1}))
+        lower_div = html.Div(lower_list, style={'columnCount': 2})
+        
+        main_div.append(UIComponents.get_map(data_pointer))
+        main_div.append(lower_div)
+        
+        
+        app.layout = html.Div(main_div)
+        
+        port = global_code.constants.APP_PORT
+        app.run_server(port=port, debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
+        
+        logger.log('GUI Server offlie')
+        
 
 
     def showTrend(self,x_vals,y_vals,x_label,y_label,title):
@@ -78,4 +100,54 @@ class GUI:
         plt.plot(x,y)  
         plt.show()
         return 
+    
+class UIComponents:
+    def get_country_dropdown(data_pointer):
+        choose_options = []
+        countries = data_pointer.get_all_countries()
+        for country in countries:
+            entry = {'label': country, 'value': country}
+            choose_options.append(entry)
+        
+        dropdown = dcc.Dropdown(options=choose_options,value='MTL')
+        return dropdown
+    
+    def get_map(data_pointer):
+        return dcc.Graph(figure=UIComponents.__get_map_figure(data_pointer))
+    
+    def get_timeframe_selection(data_pointer, time_type):
+        day_list = data_pointer.get_all_days_recorded()
+        count_days = len(day_list)
+        
+        selected = count_days/4 if time_type == 'start' else 3* count_days/4 
+        selected = int(selected )
+        
+        slider = dcc.Slider(
+            min=0,
+            max=count_days-1,
+            marks={i: day if i%10 == 0 else str('') for i,day in enumerate(day_list)},
+            value=selected,
+        )
+        return slider
 
+
+#util methods
+    def __get_map_figure(data_pointer):
+        fig = px.choropleth(data_pointer.get_map_dataframe(), 
+                    locations="Country", 
+                    locationmode = "country names",
+                    color="Confirmed", 
+                    hover_name="Country", 
+                    hover_data=["Deaths", "Recovered"],
+                    animation_frame="Date",
+                    color_continuous_scale= px.colors.sequential.Reds
+                   )
+        as_of_date = data_pointer.get_as_of_date()
+        fig.update_layout(
+            title_text = 'Global Spread of Coronavirus as of {}'.format(as_of_date),
+            title_x = 0.5,
+            geo=dict(
+                showframe = False,
+                showcoastlines = False,
+            ))
+        return fig

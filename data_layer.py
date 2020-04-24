@@ -117,6 +117,9 @@ class DataLayer:
         no_days = len(self.total_days_recorded)
         return self.total_days_recorded[no_days - 1]
     
+    def get_all_days_recorded(self):
+        return self.total_days_recorded
+    
     def get_all_countries(self):
         return self.all_countries
     

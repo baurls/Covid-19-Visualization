@@ -15,6 +15,7 @@ import plotly.express as px
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+from dash.dependencies import Output, Input, State
 
 logger = global_code.getLogger()
 
@@ -61,13 +62,13 @@ class GUI:
         main_div.append(UIComponents.get_map(data_pointer))
         main_div.append(lower_div)
         
-        
         app.layout = html.Div(main_div)
         
         port = global_code.constants.APP_PORT
         app.run_server(port=port, debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
         
         logger.log('GUI Server offlie')
+        
         
 
 
@@ -109,7 +110,7 @@ class UIComponents:
             entry = {'label': country, 'value': country}
             choose_options.append(entry)
         
-        dropdown = dcc.Dropdown(options=choose_options,value='MTL')
+        dropdown = dcc.Dropdown(id='country_dropdown',options=choose_options,value='MTL')
         return dropdown
     
     def get_map(data_pointer):
@@ -122,7 +123,9 @@ class UIComponents:
         selected = count_days/4 if time_type == 'start' else 3* count_days/4 
         selected = int(selected )
         
+        slider_id = 'start_slider' if time_type == 'start' else 'end_slider'
         slider = dcc.Slider(
+            id=slider_id,
             min=0,
             max=count_days-1,
             marks={i: day if i%10 == 0 else str('') for i,day in enumerate(day_list)},

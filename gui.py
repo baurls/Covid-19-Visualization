@@ -22,6 +22,9 @@ logger = global_code.getLogger()
 class GUI:
     def __init__(self, data_object):
         self.data_controller = data_object
+        self.st_date = 0
+        self.ed_date = 0
+        self.country = ""
     
     
     def showUI(self):
@@ -76,8 +79,8 @@ class GUI:
         )
 
         def update_value(value):
-            print(value)
-            #TODO: use this value to pick the country from the dataframe for the trend plot
+            self.country = value
+            print(self.country)
 
         #callback for start date
         @app.callback(
@@ -86,8 +89,8 @@ class GUI:
         )
 
         def update_start(start_date):
-            print(start_date)
-            #TODO: use this value to pick the start date from the dataframe for the trend plot
+            self.st_date = start_date
+            print(self.st_date)
 
         #callback for end date
         @app.callback(
@@ -96,8 +99,8 @@ class GUI:
         )
 
         def update_end(end_date):
-            print(end_date)
-            #TODO: use this value to pick the end date from the dataframe for the trend plot
+            self.ed_date = end_date
+            print(self.ed_date)
 
 
         port = global_code.constants.APP_PORT

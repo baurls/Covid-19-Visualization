@@ -68,6 +68,8 @@ class GUI:
         
         app.layout = html.Div(main_div)
         
+
+        #Callback for dropdown
         @app.callback(
             Output(component_id='dd-output-container', component_property='children'),
             [Input(component_id='country_dropdown', component_property='value')]
@@ -75,8 +77,9 @@ class GUI:
 
         def update_value(value):
             print(value)
+            #TODO: use this value to pick the country from the dataframe for the trend plot
 
-        
+        #callback for start date
         @app.callback(
             Output(component_id='dd-output-container2', component_property='children'),
             [Input(component_id='start_slider', component_property='value')]
@@ -84,7 +87,9 @@ class GUI:
 
         def update_start(start_date):
             print(start_date)
+            #TODO: use this value to pick the start date from the dataframe for the trend plot
 
+        #callback for end date
         @app.callback(
                 Output(component_id='dd-output-container3', component_property='children'),
                 [Input(component_id='end_slider', component_property='value')]
@@ -92,14 +97,13 @@ class GUI:
 
         def update_end(end_date):
             print(end_date)
+            #TODO: use this value to pick the end date from the dataframe for the trend plot
+
 
         port = global_code.constants.APP_PORT
         app.run_server(port=port, debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
         
         logger.log('GUI Server offlie')
-        
-
-        
         
 
 

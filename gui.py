@@ -58,6 +58,8 @@ class GUI:
         lower_list.append(html.Div(navigation_list, style={'columnCount': 1}))
         lower_list.append(html.Div(plots_list, style={'columnCount': 1}))
         lower_list.append(html.Div(id='dd-output-container'))
+        lower_list.append(html.Div(id='dd-output-container2'))
+        lower_list.append(html.Div(id='dd-output-container3'))
         lower_div = html.Div(lower_list,style={'columnCount': 2})
         
 
@@ -71,8 +73,25 @@ class GUI:
             [Input(component_id='country_dropdown', component_property='value')]
         )
 
-        def update_output(value):
+        def update_value(value):
             print(value)
+
+        
+        @app.callback(
+            Output(component_id='dd-output-container2', component_property='children'),
+            [Input(component_id='start_slider', component_property='value')]
+        )
+
+        def update_start(start_date):
+            print(start_date)
+
+        @app.callback(
+                Output(component_id='dd-output-container3', component_property='children'),
+                [Input(component_id='end_slider', component_property='value')]
+        )
+
+        def update_end(end_date):
+            print(end_date)
 
         port = global_code.constants.APP_PORT
         app.run_server(port=port, debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter

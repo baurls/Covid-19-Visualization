@@ -17,14 +17,20 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Output, Input, State
 
+#Date-Time Converter 
+from dateutil import parser
+
 logger = global_code.getLogger()
 
 class GUI:
     def __init__(self, data_object):
         self.data_controller = data_object
-        self.st_date = 0
-        self.ed_date = 0
-        self.country = ""
+        df = self.data_controller.get_map_dataframe()
+        dates = list(df['Date'])
+        date_set = []
+        for date in dates:
+            if date not in date_set: date_set.append(date)
+        self.date_map = date_set
     
     
     def showUI(self):
@@ -60,7 +66,7 @@ class GUI:
         lower_list = []
         lower_list.append(html.Div(navigation_list, style={'columnCount': 1}))
         lower_list.append(html.Div(plots_list, style={'columnCount': 1}))
-        lower_list.append(html.Div(id='dd-output-container'))
+        lower_list.append(html.Div(id='dd-output-container1'))
         lower_list.append(html.Div(id='dd-output-container2'))
         lower_list.append(html.Div(id='dd-output-container3'))
         lower_div = html.Div(lower_list,style={'columnCount': 2})
@@ -74,73 +80,34 @@ class GUI:
 
         #Callback for dropdown
         @app.callback(
-            Output(component_id='dd-output-container', component_property='children'),
-            [Input(component_id='country_dropdown', component_property='value')]
+            Output(component_id='dd-output-container1', component_property='children'),
+            [Input(component_id='country_dropdown', component_property='value'),
+            Input(component_id='start_slider', component_property='value'),
+            Input(component_id='end_slider', component_property='value')]
         )
 
-        def update_value(value):
-            self.country = value
+        def update_graph(country,start_date,end_date):
+            data_pointer = self.data_controller
+            date_set = self.date_map
+            df = data_pointer.get_map_dataframe()
+            if country != 'MTL':
+                updated_df = df.loc[df['Country'] == country]
+                print(country)
+                print(date_set[start_date])
+                print(date_set[end_date])
 
-        #callback for start date
-        @app.callback(
-            Output(component_id='dd-output-container2', component_property='children'),
-            [Input(component_id='start_slider', component_property='value')]
-        )
+                
 
-        def update_start(start_date):
-            self.st_date = start_date
+            
+            
 
-        #callback for end date
-        @app.callback(
-                Output(component_id='dd-output-container3', component_property='children'),
-                [Input(component_id='end_slider', component_property='value')]
-        )
-
-        def update_end(end_date):
-            self.ed_date = end_date
-
+      
 
         port = global_code.constants.APP_PORT
         app.run_server(port=port, debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
         
         logger.log('GUI Server offlie')
-        
-
-
-    def prepare_data():
-        #TODO use the current country start and end date to select which data to pass to plotting methods
-        print('in')
-
-    def showTrend(self,x_vals,y_vals,x_label,y_label,title):
-        #Will graph the trend in cases for a given timeframe and given location
-        x = self.x_vals
-        y = self.y_vals
-        x_label = self.x_label
-        y_label = self.y_label
-        t = self.title
-        plt.xlabel(x_label)
-        plt.ylabel(y_label)
-        plt.title(t)
-        plt.plot(x,y)  
-        plt.show()
-        return 
-
-    def showLogTransform(self,x_vals,y_vals,x_label,y_label,title):
-        '''Will plot a log transformation to present exponential 
-           trends for a give timeframe and given location'''
-        x = self.x_vals
-        y = self.y_vals
-        x_label = self.x_label
-        y_label = self.y_label
-        t = self.title
-        plt.xlabel(x_label)
-        plt.ylabel(y_label)
-        plt.title(t)
-        plt.yscale('log')
-        plt.plot(x,y)  
-        plt.show()
-        return 
-    
+  
 class UIComponents:
     def get_country_dropdown(data_pointer):
         choose_options = []
@@ -171,7 +138,7 @@ class UIComponents:
             value=selected,
         )
         return slider
-
+    
 
 #util methods
     def __get_map_figure(data_pointer):

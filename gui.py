@@ -80,7 +80,7 @@ class GUI:
 
         def update_value(value):
             self.country = value
-            print(self.country)
+            self.prepare_data()
 
         #callback for start date
         @app.callback(
@@ -90,7 +90,7 @@ class GUI:
 
         def update_start(start_date):
             self.st_date = start_date
-            print(self.st_date)
+            self.prepare_data()
 
         #callback for end date
         @app.callback(
@@ -100,7 +100,7 @@ class GUI:
 
         def update_end(end_date):
             self.ed_date = end_date
-            print(self.ed_date)
+            self.prepare_data()
 
 
         port = global_code.constants.APP_PORT

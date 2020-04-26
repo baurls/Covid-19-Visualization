@@ -80,7 +80,6 @@ class GUI:
 
         def update_value(value):
             self.country = value
-            self.prepare_data()
 
         #callback for start date
         @app.callback(
@@ -90,7 +89,6 @@ class GUI:
 
         def update_start(start_date):
             self.st_date = start_date
-            self.prepare_data()
 
         #callback for end date
         @app.callback(
@@ -100,7 +98,6 @@ class GUI:
 
         def update_end(end_date):
             self.ed_date = end_date
-            self.prepare_data()
 
 
         port = global_code.constants.APP_PORT
@@ -112,6 +109,7 @@ class GUI:
 
     def prepare_data():
         #TODO use the current country start and end date to select which data to pass to plotting methods
+        print('in')
 
     def showTrend(self,x_vals,y_vals,x_label,y_label,title):
         #Will graph the trend in cases for a given timeframe and given location

@@ -65,7 +65,7 @@ class GUI:
         lower_list.append(html.Div(id='dd-output-container3'))
         lower_div = html.Div(lower_list,style={'columnCount': 2})
         
-
+ 
         main_div.append(UIComponents.get_map(data_pointer))
         main_div.append(lower_div)        
         
@@ -109,6 +109,9 @@ class GUI:
         logger.log('GUI Server offlie')
         
 
+
+    def prepare_data():
+        #TODO use the current country start and end date to select which data to pass to plotting methods
 
     def showTrend(self,x_vals,y_vals,x_label,y_label,title):
         #Will graph the trend in cases for a given timeframe and given location

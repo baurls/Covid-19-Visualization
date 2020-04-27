@@ -16,6 +16,8 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Output, Input, State
+import plotly.graph_objects as go
+
 
 #Date-Time Converter 
 from dateutil import parser
@@ -55,20 +57,15 @@ class GUI:
         navigation_list.append(html.Label(' End'))
         navigation_list.append(UIComponents.get_timeframe_selection(data_pointer, 'end'))
         
-        plots_list.append(html.H2('Plots'))
-        plots_list.append(html.H3('Confirmed for selected Interval/Country'))
-        plots_list.append(html.Label('<insert_plot_here>'))
-        plots_list.append(html.H3('Deaths for selected Interval/Country'))
-        plots_list.append(html.Label('<insert_plot_here>'))
-        plots_list.append(html.H3('Recovered for selected Interval/Country'))
-        plots_list.append(html.Label('<insert_plot_here>'))
-        
+        plots_list.append(html.H2('Plot'))
+        plots_list.append(html.H3('Confirmed Cases, Deaths, and Recoveries for selected Interval/Country -> '))
+        plots_list.append(html.Div(dcc.Graph(id='main-graph')))
+       
+
         lower_list = []
         lower_list.append(html.Div(navigation_list, style={'columnCount': 1}))
         lower_list.append(html.Div(plots_list, style={'columnCount': 1}))
         lower_list.append(html.Div(id='dd-output-container1'))
-        lower_list.append(html.Div(id='dd-output-container2'))
-        lower_list.append(html.Div(id='dd-output-container3'))
         lower_div = html.Div(lower_list,style={'columnCount': 2})
         
  
@@ -80,7 +77,7 @@ class GUI:
 
         #Callback for dropdown
         @app.callback(
-            Output(component_id='dd-output-container1', component_property='children'),
+            Output('main-graph', 'figure'),
             [Input(component_id='country_dropdown', component_property='value'),
             Input(component_id='start_slider', component_property='value'),
             Input(component_id='end_slider', component_property='value')]
@@ -92,7 +89,7 @@ class GUI:
             df = data_pointer.get_map_dataframe()
             cases_dict = {}
             deaths_dict = {}
-            recovered_dict{} 
+            recovered_dict = {} 
             if country != 'MTL':
                 updated_df = df.loc[df['Country'] == country]
                 for index,row in updated_df.iterrows():
@@ -107,10 +104,30 @@ class GUI:
                             deaths_dict[day] = row['Deaths']
                             recovered_dict[day] = row['Recovered']
                 
-                x_data = [value for key,value in cases_dict.items()]
-                x2_data = [value for key,value in deaths_dict.items()]
-                x3_data = [value for key,value in recovered_dict.items()]
-                y_data = list(range(len(date_set)))
+                y_data = [value for key,value in cases_dict.items()]
+                y2_data = [value for key,value in deaths_dict.items()]
+                y3_data = [value for key,value in recovered_dict.items()]
+                x_data = list(range(len(date_set)))
+
+                return {
+                    'data': [dict(
+                        x=x_data,
+                        y=y_data,
+                        text='Title Example',
+                        mode='line',
+                     )],
+
+                     'layout': dict(
+                            xaxis={
+                                'title': 'Days'
+                            },
+                            yaxis={
+                                'title': 'Total Confirmed Cases',
+                            },
+                            hovermode='closest'
+                        )
+                }
+            return dash.no_update
                 
                 
                 

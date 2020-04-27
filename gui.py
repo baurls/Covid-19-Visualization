@@ -100,10 +100,16 @@ class GUI:
                         day = row['Date']
                         if day in cases_dict:
                             cases_dict[day] += row['Confirmed']
+                            deaths_dict[day] += row['Deaths']
+                            recovered_dict[day] += row['Recovered']
                         else:
                             cases_dict[day] = row['Confirmed']
+                            deaths_dict[day] = row['Deaths']
+                            recovered_dict[day] = row['Recovered']
                 
                 x_data = [value for key,value in cases_dict.items()]
+                x2_data = [value for key,value in deaths_dict.items()]
+                x3_data = [value for key,value in recovered_dict.items()]
                 y_data = list(range(len(date_set)))
                 
                 

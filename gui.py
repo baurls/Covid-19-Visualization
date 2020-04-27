@@ -58,9 +58,7 @@ class GUI:
         navigation_list.append(UIComponents.get_timeframe_selection(data_pointer, 'end'))
         
 
-        #TODO figure out how to fix this HTML, and maybe turn plots into three seperate ones
         plots_list.append(html.H2('Plot'))
-        plots_list.append(html.H3('Confirmed Cases, Deaths, and Recoveries for selected Interval/Country -> '))
         plots_list.append(html.Div(dcc.Graph(id='main-graph')))
        
 

@@ -86,6 +86,7 @@ class GUI:
         def update_graph(country,start_date,end_date):
             data_pointer = self.data_controller
             date_set = self.date_map[start_date:end_date+1]
+            dates = self.date_map
             df = data_pointer.get_map_dataframe()
             cases_dict = {}
             deaths_dict = {}
@@ -109,30 +110,23 @@ class GUI:
                 y3_data = [value for key,value in recovered_dict.items()]
                 x_data = list(range(len(date_set)))
 
-                return {
-                    'data': [dict(
-                        x=x_data,
-                        y=y_data,
-                        text='Title Example',
-                        mode='line',
-                     )],
-
-                     'layout': dict(
-                            xaxis={
-                                'title': 'Days'
-                            },
-                            yaxis={
-                                'title': 'Total Confirmed Cases',
-                            },
-                            hovermode='closest'
-                        )
-                }
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(x=x_data, y=y_data,
+                    mode='lines+markers',
+                    name='Confirmed Cases'))
+                fig.add_trace(go.Scatter(x=x_data, y=y2_data,
+                    mode='lines+markers',
+                    name='Deaths'))
+                fig.add_trace(go.Scatter(x=x_data, y=y3_data,
+                    mode='lines+markers', name='Recovered'))
+                t = f"Confirmed Cases, Deaths, and Recoveries for {country} from {dates[start_date]} to {dates[end_date-1]}"
+                fig.update_layout(title=t, xaxis_title='Day',
+                   yaxis_title='Number of People')
+                return fig
+                
             return dash.no_update
                 
                 
-                
-
-    
         port = global_code.constants.APP_PORT
         app.run_server(port=port, debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
         

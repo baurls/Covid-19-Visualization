@@ -88,21 +88,28 @@ class GUI:
 
         def update_graph(country,start_date,end_date):
             data_pointer = self.data_controller
-            date_set = self.date_map
+            date_set = self.date_map[start_date:end_date+1]
             df = data_pointer.get_map_dataframe()
+            cases_dict = {}
+            deaths_dict = {}
+            recovered_dict{} 
             if country != 'MTL':
                 updated_df = df.loc[df['Country'] == country]
-                print(country)
-                print(date_set[start_date])
-                print(date_set[end_date])
-
+                for index,row in updated_df.iterrows():
+                    if row['Date'] in date_set:
+                        day = row['Date']
+                        if day in cases_dict:
+                            cases_dict[day] += row['Confirmed']
+                        else:
+                            cases_dict[day] = row['Confirmed']
+                
+                x_data = [value for key,value in cases_dict.items()]
+                y_data = list(range(len(date_set)))
+                
+                
                 
 
-            
-            
-
-      
-
+    
         port = global_code.constants.APP_PORT
         app.run_server(port=port, debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
         

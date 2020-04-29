@@ -1,7 +1,7 @@
 """
 Created on Mon Apr 20 05:24:53 2020
 
-@author: Shardool
+@author: Shardool and Lukas
 """
 #local imports 
 import global_code
@@ -57,16 +57,20 @@ class GUI:
         navigation_list.append(html.Label(' End'))
         navigation_list.append(UIComponents.get_timeframe_selection(data_pointer, 'end'))
         
+        navigation_list.append(html.Label(' Axis type'))
+        navigation_list.append(UIComponents.get_log_checkbox())
+        
 
         plots_list.append(html.H2('Plot'))
         plots_list.append(html.Div(dcc.Graph(id='main-graph')))
+#        plots_list.append(html.Div(dcc.Graph(id='daily-graph')))
        
 
         lower_list = []
-        lower_list.append(html.Div(navigation_list, style={'columnCount': 1}))
-        lower_list.append(html.Div(plots_list, style={'columnCount': 1}))
+        lower_list.append(html.Div(navigation_list, style={'columnCount': 1, 'padding':'5px'}))
+        lower_list.append(html.Div(plots_list, style={'columnCount': 1, 'padding':'20px'}))
         lower_list.append(html.Div(id='dd-output-container1'))
-        lower_div = html.Div(lower_list,style={'columnCount': 2})
+        lower_div = html.Div(lower_list,style={'columnCount': 1})
         
  
         main_div.append(UIComponents.get_map(data_pointer))
@@ -80,14 +84,15 @@ class GUI:
             Output('main-graph', 'figure'),
             [Input(component_id='country_dropdown', component_property='value'),
             Input(component_id='start_slider', component_property='value'),
-            Input(component_id='end_slider', component_property='value')]
+            Input(component_id='end_slider', component_property='value'),
+            Input(component_id='log_type', component_property='value')]
         )
-
-        def update_graph(country,start_date,end_date):
-            data_pointer = self.data_controller
+        
+        def update_graph(country,start_date,end_date,axis_type):
+            
             date_set = self.date_map[start_date:end_date+1]
             dates = self.date_map
-            df = data_pointer.get_map_dataframe()
+            df = self.data_controller.get_map_dataframe()
             cases_dict = {}
             deaths_dict = {}
             recovered_dict = {} 
@@ -114,14 +119,40 @@ class GUI:
                 fig.add_trace(go.Scatter(x=x_data, y=y_data,
                     mode='lines+markers',
                     name='Confirmed Cases'))
+                
                 fig.add_trace(go.Scatter(x=x_data, y=y2_data,
                     mode='lines+markers',
                     name='Deaths'))
+                
                 fig.add_trace(go.Scatter(x=x_data, y=y3_data,
                     mode='lines+markers', name='Recovered'))
-                t = f"Confirmed Cases, Deaths, and Recoveries for {country} from {dates[start_date]} to {dates[end_date-1]}"
-                fig.update_layout(title=t, xaxis_title='Day',
-                   yaxis_title='Number of People')
+                
+                t = f"Details for {country} from {dates[start_date]} to {dates[end_date-1]}"
+                
+                axis_type = 'linear' if axis_type == 'Linear' else 'log'
+                
+                fig.update_layout(title=t, xaxis_title='Day', yaxis_title='Number of People', yaxis_type=axis_type, updatemenus=[
+                   dict(
+                        buttons=list([
+                            dict(
+                                args=[{"visible": [True, True, True]}],
+                                label="Show Confirmed Cases",
+                                method="restyle"
+                            ),
+                            dict(
+                                args=[{"visible": [False, True, True]}],
+                                label="Hide Confirmed Cases",
+                                method="restyle"
+                            )]),
+                        type = "buttons",
+                        direction="right",
+                        pad={"l": 10, "t": 10},
+                        showactive=True,
+                        x=0.03,
+                        xanchor="left",
+                        yanchor="top"
+                        ),     
+                        ] )
                 return fig
                 
             return dash.no_update
@@ -130,7 +161,7 @@ class GUI:
         port = global_code.constants.APP_PORT
         app.run_server(port=port, debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
         
-        logger.log('GUI Server offlie')
+        logger.log('GUI Server offline')
   
 class UIComponents:
     def get_country_dropdown(data_pointer):
@@ -145,6 +176,16 @@ class UIComponents:
     
     def get_map(data_pointer):
         return dcc.Graph(figure=UIComponents.__get_map_figure(data_pointer))
+    
+    def get_log_checkbox():
+        radio_item = dcc.RadioItems(
+                id='log_type',
+                options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
+                value='Linear',
+                labelStyle={'display': 'inline-block'}
+            )
+        return radio_item
+        
     
     def get_timeframe_selection(data_pointer, time_type):
         day_list = data_pointer.get_all_days_recorded()
@@ -179,6 +220,9 @@ class UIComponents:
         fig.update_layout(
             title_text = 'Global Spread of Coronavirus as of {}'.format(as_of_date),
             title_x = 0.5,
+            width=1400,
+            height=700,
+            autosize=True,
             geo=dict(
                 showframe = False,
                 showcoastlines = False,

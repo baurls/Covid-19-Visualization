@@ -17,7 +17,7 @@ import global_code
 #the GUI might have its own ViewController.
 
 #load data
-data_name = '2020-04-21/covid_19_data.csv'
+data_name = '2020-04-30/covid_19_data.csv'
 data_path = global_code.constants.DATA_PATH + data_name #this might be changeable by the UI
 data = DataLayer(data_path)
 

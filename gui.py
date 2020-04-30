@@ -9,6 +9,7 @@ import global_code
 #global packages
 import matplotlib.pyplot as plt
 import plotly.express as px
+import numpy as np
 
 
 #plotly
@@ -63,6 +64,10 @@ class GUI:
 
         plots_list.append(html.H2('Plot'))
         plots_list.append(html.Div(dcc.Graph(id='main-graph')))
+        plots_list.append(html.H2('Compare spread over time'))
+        plots_list.append(UIComponents.get_country_dropdown(data_pointer,forComparison=True))
+        plots_list.append(html.Div(dcc.Graph(id='compare-graph')))
+        plots_list.append(html.Div(dcc.Graph(id='daily-compare-graph')))
 #        plots_list.append(html.Div(dcc.Graph(id='daily-graph')))
        
 
@@ -79,6 +84,32 @@ class GUI:
         app.layout = html.Div(main_div)
         
 
+        
+        def get_country_over_time_data(country, date_range):
+            df = self.data_controller.get_map_dataframe()
+            updated_df = df.loc[df['Country'] == country]
+            cases_dict = {}
+            deaths_dict = {}
+            recovered_dict = {} 
+            
+            for index,row in updated_df.iterrows():
+                if row['Date'] in date_range:
+                    day = row['Date']
+                    if day in cases_dict:
+                        cases_dict[day] += row['Confirmed']
+                        deaths_dict[day] += row['Deaths']
+                        recovered_dict[day] += row['Recovered']
+                    else:
+                        cases_dict[day] = row['Confirmed']
+                        deaths_dict[day] = row['Deaths']
+                        recovered_dict[day] = row['Recovered']
+            
+            cases_data = [value for key,value in cases_dict.items()]
+            death_data = [value for key,value in deaths_dict.items()]
+            recovered_data = [value for key,value in recovered_dict.items()]
+            x_data = list(range(len(date_range)))
+            return x_data, cases_data, death_data, recovered_data
+        
         #Callback for dropdown
         @app.callback(
             Output('main-graph', 'figure'),
@@ -87,44 +118,22 @@ class GUI:
             Input(component_id='end_slider', component_property='value'),
             Input(component_id='log_type', component_property='value')]
         )
-        
         def update_graph(country,start_date,end_date,axis_type):
-            
-            date_set = self.date_map[start_date:end_date+1]
+            date_range = self.date_map[start_date:end_date+1]
+            (x_data, cases_data, death_data, recovered_data) = get_country_over_time_data(country, date_range)
             dates = self.date_map
-            df = self.data_controller.get_map_dataframe()
-            cases_dict = {}
-            deaths_dict = {}
-            recovered_dict = {} 
+       
             if country != 'MTL':
-                updated_df = df.loc[df['Country'] == country]
-                for index,row in updated_df.iterrows():
-                    if row['Date'] in date_set:
-                        day = row['Date']
-                        if day in cases_dict:
-                            cases_dict[day] += row['Confirmed']
-                            deaths_dict[day] += row['Deaths']
-                            recovered_dict[day] += row['Recovered']
-                        else:
-                            cases_dict[day] = row['Confirmed']
-                            deaths_dict[day] = row['Deaths']
-                            recovered_dict[day] = row['Recovered']
-                
-                y_data = [value for key,value in cases_dict.items()]
-                y2_data = [value for key,value in deaths_dict.items()]
-                y3_data = [value for key,value in recovered_dict.items()]
-                x_data = list(range(len(date_set)))
-
                 fig = go.Figure()
-                fig.add_trace(go.Scatter(x=x_data, y=y_data,
+                fig.add_trace(go.Scatter(x=x_data, y=cases_data,
                     mode='lines+markers',
                     name='Confirmed Cases'))
                 
-                fig.add_trace(go.Scatter(x=x_data, y=y2_data,
+                fig.add_trace(go.Scatter(x=x_data, y=death_data,
                     mode='lines+markers',
                     name='Deaths'))
                 
-                fig.add_trace(go.Scatter(x=x_data, y=y3_data,
+                fig.add_trace(go.Scatter(x=x_data, y=recovered_data,
                     mode='lines+markers', name='Recovered'))
                 
                 t = f"Details for {country} from {dates[start_date]} to {dates[end_date-1]}"
@@ -156,7 +165,86 @@ class GUI:
                 return fig
                 
             return dash.no_update
+        
+        
+        #Callback for dropdown
+        @app.callback(
+            Output('compare-graph', 'figure'),
+            [Input(component_id='country_dropdown', component_property='value'),
+            Input(component_id='country2_dropdown', component_property='value'),
+            Input(component_id='start_slider', component_property='value'),
+            Input(component_id='end_slider', component_property='value'),
+            Input(component_id='log_type', component_property='value')]
+        )
+        def update_graph(country1,country2,start_date,end_date,axis_type):
+            date_range = self.date_map[start_date:end_date+1]
+
+            if country1 != 'MTL' and country2 != 'MTL':
+  
+                (x_data, cases_data1, _, _) = get_country_over_time_data(country1, date_range)
+                (x_data, cases_data2, _, _) = get_country_over_time_data(country2, date_range)
+                dates = self.date_map
                 
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(x=x_data, y=cases_data1,
+                    mode='lines+markers',
+                    name='#Confirmed in ' + country1))
+                
+                fig.add_trace(go.Scatter(x=x_data, y=cases_data2,
+                    mode='lines+markers',
+                    name='#Confirmed in ' + country2))
+                                
+                t = f"Absolute (cumulative) cases comparison of {country1} and {country1} {dates[start_date]} to {dates[end_date-1]}"
+                
+                axis_type = 'linear' if axis_type == 'Linear' else 'log'
+                
+                fig.update_layout(title=t, xaxis_title='Day', yaxis_title='Number of confirmed cases', yaxis_type=axis_type)
+                return fig
+            return dash.no_update
+                
+        def extract_daily_increas(cum_cases):
+            daily1 = np.zeros(len(cum_cases)-1)
+            for i in range(len(daily1)):
+                daily1[i] = cum_cases[i+1] -  cum_cases[i]
+            return daily1
+                
+             #Callback for dropdown
+        @app.callback(
+            Output('daily-compare-graph', 'figure'),
+            [Input(component_id='country_dropdown', component_property='value'),
+            Input(component_id='country2_dropdown', component_property='value'),
+            Input(component_id='start_slider', component_property='value'),
+            Input(component_id='end_slider', component_property='value'),
+            Input(component_id='log_type', component_property='value')]
+        )
+        def update_graph(country1,country2,start_date,end_date,axis_type):
+            date_range = self.date_map[start_date-1:end_date+1]
+
+            if country1 != 'MTL' and country2 != 'MTL':
+  
+                (x_data, cases_data1, _, _) = get_country_over_time_data(country1, date_range)
+                (x_data, cases_data2, _, _) = get_country_over_time_data(country2, date_range)
+                dates = self.date_map
+                
+                                
+                daily1 = extract_daily_increas(cases_data1)
+                daily2 = extract_daily_increas(cases_data2)
+                
+                
+                fig = go.Figure()
+                fig.add_trace(go.Bar(x=x_data[:-1], y=daily1,
+                    name='#Confirmed in ' + country1))
+                
+                fig.add_trace(go.Bar(x=x_data[:-1], y=daily2,
+                    name='#Confirmed in ' + country2))
+                                
+                t = f"Daily cases comparison of {country1} and {country2} {dates[start_date]} to {dates[end_date-1]}"
+                
+                axis_type = 'linear' if axis_type == 'Linear' else 'log'
+                
+                fig.update_layout(title=t, xaxis_title='Day', yaxis_title='Number of confirmed cases', yaxis_type=axis_type)
+                return fig
+            return dash.no_update
                 
         port = global_code.constants.APP_PORT
         app.run_server(port=port, debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
@@ -164,14 +252,17 @@ class GUI:
         logger.log('GUI Server offline')
   
 class UIComponents:
-    def get_country_dropdown(data_pointer):
+    def get_country_dropdown(data_pointer, forComparison=False):
         choose_options = []
         countries = data_pointer.get_all_countries()
         for country in countries:
             entry = {'label': country, 'value': country}
             choose_options.append(entry)
-        
-        dropdown = dcc.Dropdown(id='country_dropdown',options=choose_options,value='MTL')
+        html_id =  'country_dropdown'
+        if forComparison:
+            html_id = 'country2_dropdown'
+        dropdown = dcc.Dropdown(id=html_id,options=choose_options,value='MTL')
+            
         return dropdown
     
     def get_map(data_pointer):

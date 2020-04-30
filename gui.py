@@ -68,9 +68,12 @@ class GUI:
         plots_list.append(UIComponents.get_country_dropdown(data_pointer,forComparison=True))
         plots_list.append(html.Div(dcc.Graph(id='compare-graph')))
         plots_list.append(html.Div(dcc.Graph(id='daily-compare-graph')))
-#        plots_list.append(html.Div(dcc.Graph(id='daily-graph')))
-       
-
+        plots_list.append(html.H2('Hotspots over time'))
+        plots_list.append(html.H3('Confirmed Cases'))
+        plots_list.append(UIComponents.get_hotspot_diagram(data_pointer))
+        plots_list.append(html.H3('Deaths'))
+        plots_list.append(UIComponents.get_hotspot_diagram(data_pointer, showDeaths=True))
+        
         lower_list = []
         lower_list.append(html.Div(navigation_list, style={'columnCount': 1, 'padding':'5px'}))
         lower_list.append(html.Div(plots_list, style={'columnCount': 1, 'padding':'20px'}))
@@ -265,6 +268,9 @@ class UIComponents:
             
         return dropdown
     
+    def get_hotspot_diagram(data_pointer, showDeaths=False):
+        return html.Div(dcc.Graph(figure=UIComponents.__get__hotspot_figure(data_pointer,showDeaths)))
+    
     def get_map(data_pointer):
         return dcc.Graph(figure=UIComponents.__get_map_figure(data_pointer))
     
@@ -295,7 +301,23 @@ class UIComponents:
         )
         return slider
     
-
+    def __get__hotspot_figure(data_pointer, showDeaths): 
+        data = data_pointer.get_hotspot_dataframe()
+        plottype = 'Confirmed' if showDeaths == False else "Deaths"
+        scale = [(0, "rgb(166,206,227)"),  (0.20, "rgb(166,206,227)"),
+                 (0.20, "rgb(185, 255, 166)"),(0.40, "rgb(185, 255, 166)"),
+                 (0.40, "rgb(251, 255, 166)"),(0.60, "rgb(251, 255, 166)"),
+                 (0.60, "rgb(252, 208, 154)"),  (0.80, "rgb(252, 208, 154)"),
+                 (0.80, "rgb(252, 154, 154)"),  (1, "rgb(252, 154, 154)"),
+                 (1, "rgb(252, 154, 154)")]
+         
+        fig = px.bar(data, x='Country', y=plottype,
+                    hover_name="Country", 
+                    color=plottype,
+                    color_continuous_scale=scale,
+                    hover_data=["Deaths", "Recovered", "Confirmed"],
+                    animation_frame="Date")
+        return fig
 #util methods
     def __get_map_figure(data_pointer):
         fig = px.choropleth(data_pointer.get_map_dataframe(), 

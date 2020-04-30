@@ -113,6 +113,18 @@ class DataLayer:
         final_df = self.geo_map_dataframe[self.geo_map_dataframe['Confirmed']>0]
         return final_df.groupby(['Date','Country']).sum().reset_index()
         
+    def get_hotspot_dataframe(self):
+        final_df = self.geo_map_dataframe[self.geo_map_dataframe['Confirmed']>0]
+        all_data = final_df.groupby(['Date','Country']).sum().reset_index()
+        last_day_data =  all_data[ all_data['Date'] == self.get_as_of_date() ]
+        hotspot_filtered = last_day_data[last_day_data['Confirmed'] > global_code.constants.HOTSPOT_NUM]
+        hotspot_countries = list(hotspot_filtered['Country'])
+        
+        hotspot_data = all_data[ all_data['Country'].isin(hotspot_countries) ]
+        start = global_code.constants.HOTSPOT_START
+        hotspot_data = hotspot_data[hotspot_data['Date'] > self.get_all_days_recorded()[start]]
+        return hotspot_data
+    
     def get_as_of_date(self):
         no_days = len(self.total_days_recorded)
         return self.total_days_recorded[no_days - 1]

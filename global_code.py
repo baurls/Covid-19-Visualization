@@ -6,6 +6,9 @@ class constants:
     DATA_PATH = 'Data/' 
     APP_NAME = 'Covid-19 Spread Visualization'
     APP_PORT = 1234
+    HOTSPOT_START = 15
+    HOTSPOT_NUM = 30000
+    
 
     
 #functions
